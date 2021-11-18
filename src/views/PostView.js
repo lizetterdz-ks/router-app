@@ -8,7 +8,6 @@ const PostView = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     let { id } = useParams();
-    // const currentAnimal = animals.find((animal) => params.id === animal.id);
 
     useEffect(() => {
         async function fetchPost () {
@@ -27,6 +26,7 @@ const PostView = () => {
     };
   
     if (id>100) return <Navigate to='/posts' />; 
+    
     return (
         <LayoutContainer>
         {
