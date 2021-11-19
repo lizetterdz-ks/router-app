@@ -27,6 +27,7 @@ const PostDashboard = () => {
   }, [page])
 
   const handleReturnToLogin = () => {
+    localStorage.setItem('authorized', '0');
     navigate('/login');
   };
 

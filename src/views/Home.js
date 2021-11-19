@@ -24,7 +24,7 @@ const Home = () => {
                     <CardActions sx={{alignSelf: 'center'}}>
                         <Button color='secondary'  size='medium' variant='contained'
                         onClick={handleJoin}>
-                            Join
+                            Start
                         </Button>
                     </CardActions>
                 </Box>
