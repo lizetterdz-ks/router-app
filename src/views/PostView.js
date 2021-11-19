@@ -8,12 +8,14 @@ const PostView = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     let { id } = useParams();
+    const [status, setStatus] = useState('');
 
     useEffect(() => {
         async function fetchPost () {
           let res = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`)
           let data = await res.json();
           setPost(data);
+          setStatus(res.status);
           setLoading(false);
         }
         setLoading(true);
@@ -24,8 +26,8 @@ const PostView = () => {
     const handleReturnToDashboard = () => {
         navigate('/posts');
     };
-  
-    if (id>100) return <Navigate to='/posts' />; 
+    
+    if (status === 404) return <Navigate to='/posts' />; 
     
     return (
         <LayoutContainer>
