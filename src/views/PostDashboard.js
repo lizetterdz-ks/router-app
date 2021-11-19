@@ -75,11 +75,6 @@ const PostDashboard = () => {
                 </CardActions>
               </Card>
             </Grid>
-            // <div style={{ marginBottom: '1rem' }}>
-            //   <Link to={`/posts/${post.id}`}>
-            //     Let's check a {post.title}
-            //   </Link>
-            // </div>
           ))}
           </Grid>
         </>
