@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -11,7 +11,15 @@ import Tab from '@mui/material/Tab';
 export default function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [log, setLog] = useState('Login')
+  const [log, setLog] = useState('Login');
+  const { id } = useParams();
+
+  useEffect(() => {
+    if(localStorage.getItem('authorized') === '1'){
+      setLog('Logout');
+    }
+  }, [])
+
   const navTheme = {
       color: '#000000',
       accent: '#3731A6',
@@ -56,10 +64,6 @@ export default function NavBar() {
     const handleChange = (event, newValue) => {
       setValue(newValue);
     };
-
-    if(localStorage.getItem('authorized') === '1'){
-      setLog('Logout');
-    }
   
     return (
       <Box sx={{ width: '100%' }}>
@@ -67,19 +71,20 @@ export default function NavBar() {
           value={value}
           onChange={handleChange}>
           <StyledTab value='/home' label="Home" href="/home" />
-          <StyledTab value='/posts'  label="Posts" href="/posts" /> 
+          <StyledTab value='/posts' label="Posts" href="/posts" /> 
+          <StyledTab value={'/posts/'+id} label={id ? "Post "+id : ''} disabled={id ? false : true}/>
         </StyledTabs>
       </Box>
     );
   }
 
-    const handleLogin = (event) => {
-        if (localStorage.getItem('authorized') === '1'){
-          localStorage.setItem('authorized', '0');
-          navigate('/login');
-        }
-        navigate('/login')
-    }
+  const handleLogin = (event) => {
+      if (localStorage.getItem('authorized') === '1'){
+        localStorage.setItem('authorized', '0');
+        navigate('/login');
+      }
+      navigate('/login')
+  }
 
   return (
     <Box sx={{ flexGrow: 1, margin: 2 }}>
