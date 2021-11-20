@@ -40,9 +40,7 @@ const PostDashboard = () => {
     navigate(`${location.pathname}?page=${newPage}`, { replace: true })
     setPage(newPage);
   };
-
   return (
-    // <PostsContext.Provider value={posts}>
     <LayoutContainer>
       {
         loading ?
@@ -114,7 +112,6 @@ const PostDashboard = () => {
         Return to login
       </Button>
     </LayoutContainer>
-    // </PostsContext.Provider>
   );
 };
 
