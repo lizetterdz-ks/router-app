@@ -42,6 +42,7 @@ const PostDashboard = () => {
   };
 
   return (
+    // <PostsContext.Provider value={posts}>
     <LayoutContainer>
       {
         loading ?
@@ -113,6 +114,7 @@ const PostDashboard = () => {
         Return to login
       </Button>
     </LayoutContainer>
+    // </PostsContext.Provider>
   );
 };
 

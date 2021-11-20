@@ -4,7 +4,7 @@ import LayoutContainer from '../components/LayoutContainer';
 import { useState, useEffect } from 'react';
   
 const PostView = () => {
-    const [post, setPost] = useState({});
+    const [post, setPost] = useState({0:''});
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     let { id } = useParams();
