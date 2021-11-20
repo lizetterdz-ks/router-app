@@ -60,6 +60,9 @@ export default function NavBar() {
 
   function ColorTabs() {
     const [value, setValue] = useState(`${location.pathname}`);
+    if (value === '/'){
+      setValue('/home');
+    }
   
     const handleChange = (event, newValue) => {
       setValue(newValue);
