@@ -1,8 +1,11 @@
 import { Button, TextField } from "@mui/material";
 import { makeStyles } from '@mui/styles';
 import { LoginContainer } from "../components/LoginContainer";
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import { selectAuthEmail, selectAuthPassword, selectAuthError, selectIsAuthenticated } from "../features/auth/authSelectors";
+import { setUserEmail, setUserPassword, authUser } from "../features/auth/authSlice";
+import { useDispatch, useSelector } from 'react-redux';
 
 const useStyles = makeStyles(() => ({
   subtitle: {
@@ -42,29 +45,27 @@ const useStyles = makeStyles(() => ({
 function Login() {
   const classes = useStyles();
   const navigate = useNavigate();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showError, setShowError] = useState(false);
+  const dispatch = useDispatch();
+  const email = useSelector(selectAuthEmail);
+  const password = useSelector(selectAuthPassword);
+  const error = useSelector(selectAuthError);
+  const isAuth = useSelector(selectIsAuthenticated);
 
   const handleLoginEmail = (event) => {
     event.preventDefault();
-
-    if (email !== 'example@example.com' || password !== 'password') {
-        localStorage.setItem('authorized', '0');
-        setShowError(true) 
-        return
-    };
-    localStorage.setItem('authorized', '1');
+    dispatch(authUser());
+    if (!isAuth){
+      return
+    }
     navigate('/posts');
   };
 
   const handleEmailChange = (event) => {
-    setEmail(event.target.value);
+    dispatch(setUserEmail(event.target.value));
   };
 
   const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
+    dispatch(setUserPassword(event.target.value));
   };
 
   const isValidLogin = () => {
@@ -73,7 +74,7 @@ function Login() {
 
   return (<LoginContainer
     title="Log in"
-    header={showError ? <div style={{color: 'red'}}>
+    header={error ? <div style={{color: 'red'}}>
       Error in login
     </div> : null}
   >

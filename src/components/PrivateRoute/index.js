@@ -1,9 +1,9 @@
-import React, { useState } from "react";
 import { Navigate } from "react-router-dom";
+import { selectIsAuthenticated } from "../../features/auth/authSelectors";
+import { useSelector } from "react-redux";
 
 export const ProtectedRoute = ({ children, redirectTo }) => {
-  const [isAuth] = useState(localStorage.getItem('authorized') === '1');
-
+  const isAuth = useSelector(selectIsAuthenticated);
   return (
     isAuth ? children : 
     <Navigate to={redirectTo} />)

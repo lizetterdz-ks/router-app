@@ -1,56 +1,85 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LayoutContainer from '../components/LayoutContainer';
-import { Box, Button, Typography, Card, CardActions, CardContent, Grid } from '@mui/material';
+import { Button, Typography, Card, CardActions, CardContent, Grid, Alert,
+  AlertTitle, CircularProgress, } from '@mui/material';
+import { deletePost, getPosts } from '../features/posts/postsThunks';
+import { setSelectedPost } from '../features/posts/postsSlice';
+import { selectPostsLoading, selectPostsError, selectAllPosts } from '../features/posts/postsSelectors';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAuth } from '../features/auth/authSlice';
+import { selectIsAuthenticated } from '../features/auth/authSelectors';
 
 const PostDashboard = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
-  const currentPage = useMemo(
-    () => new URLSearchParams(location.search).get('page'),
-    [location.search],
-  );
 
-  const [page, setPage] = useState(currentPage ? Number(currentPage) : 1);
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const loading = useSelector(selectPostsLoading);
+  const error = useSelector(selectPostsError);
+  const isAuth = useSelector(selectIsAuthenticated);
+  const allPosts = useSelector(selectAllPosts);
 
   useEffect(() => {
-    async function fetchPosts () {
-      let res = await fetch(`https://jsonplaceholder.typicode.com/posts/?_page=${page}`)
-      let data = await res.json();
-      setPosts(data);
-      setLoading(false);
-    }
-    setLoading(true);
-    fetchPosts();
-  }, [page])
+    dispatch(getPosts());
+  },[dispatch]);
 
-  const handleReturnToLogin = () => {
-    localStorage.setItem('authorized', '0');
-    navigate('/login');
-  };
-
-  const handleKeepReading = (id) => {
+  const handleSelectPost = (id) => {
+    dispatch(setSelectedPost(id));
     navigate(`/posts/${id}`)
   }
 
-  const changePage = (newPage) => {
-    if (newPage > posts.length || newPage === 0) return;
-    navigate(`${location.pathname}?page=${newPage}`, { replace: true })
-    setPage(newPage);
+  const refetchPosts = () => {
+    dispatch(getPosts());
+  }
+
+  const handleReturnToLogin = () => {
+    if (isAuth){
+      dispatch(setAuth());
+    }
+    navigate('/login');
   };
+
+  const handleCreate = () => {
+    navigate('/create');
+  }
+
+  const handleDeletePost = (id) => {
+    if (!isAuth) {
+      navigate('/login');
+    }
+    dispatch(setSelectedPost(id));
+    dispatch(deletePost({id}));
+  }
+
+  if (error) {
+    return (
+      <Alert severity='error'>
+        <AlertTitle>Error</AlertTitle>
+        There was an error fetching the information!
+        <div>
+          <Button variant='outlined' onClick={refetchPosts}>
+            Click to refetch
+          </Button>
+        </div>
+      </Alert>
+    )
+  }
+
   return (
     <LayoutContainer>
       {
         loading ?
         <>
           <h2>Loading...</h2>
+          <CircularProgress />
         </>
         :
         <>
+          <Button variant="contained" color="secondary" onClick={handleCreate}>
+            Create
+          </Button>
           <Grid container spacing={2} wrap='wrap' sx={{display: 'flex', justifyContent: 'center', padding: 2}}>
-          {posts.map((post) => (
+          {allPosts.map((post) => (
             <Grid item xs='auto'  key={post.id} sx={{padding:1, margin: 0}}>
               <Card sx={{width: 345, height: 250, padding: 2}}>
                 <CardContent>
@@ -68,9 +97,14 @@ const PostDashboard = () => {
                 </CardContent>
                 <CardActions>
                   <Button size="small" variant="contained" onClick={() => {
-                    handleKeepReading(post.id)
+                    handleSelectPost(post.id)
                   }}>
                     Keep reading
+                  </Button>
+                  <Button size="small"  onClick={() => {
+                    handleDeletePost(post.id)
+                  }}>
+                    Remove
                   </Button>
                 </CardActions>
               </Card>
@@ -79,31 +113,6 @@ const PostDashboard = () => {
           </Grid>
         </>
       }
-      <Box
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: '2rem',
-        }}
-      >
-        <Button
-          size='small'
-          color='primary'
-          onClick={() => changePage(page - 1)}
-        >
-          Previous page
-        </Button>
-        <Typography component='h4' variant='h4'>
-          {page}
-        </Typography>
-        <Button
-          size='small'
-          color='primary'
-          onClick={() => changePage(page + 1)}
-        >
-          Next page
-        </Button>
-      </Box>
       <Button
         style={{ marginTop: '2rem' }}
         color='secondary'

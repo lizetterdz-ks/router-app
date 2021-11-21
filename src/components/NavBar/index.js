@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
@@ -7,18 +7,16 @@ import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import { selectIsAuthenticated } from "../../features/auth/authSelectors";
+import { useDispatch, useSelector } from 'react-redux';
+import { setAuth } from "../../features/auth/authSlice";
 
 export default function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [log, setLog] = useState('Login');
+  const dispatch = useDispatch();
   const { id } = useParams();
-
-  useEffect(() => {
-    if(localStorage.getItem('authorized') === '1'){
-      setLog('Logout');
-    }
-  }, [])
+  const isAuth = useSelector(selectIsAuthenticated);
 
   const navTheme = {
       color: '#000000',
@@ -66,25 +64,25 @@ export default function NavBar() {
   
     const handleChange = (event, newValue) => {
       setValue(newValue);
+      navigate(newValue);
     };
-  
     return (
       <Box sx={{ width: '100%' }}>
         <StyledTabs 
           value={value}
           onChange={handleChange}>
-          <StyledTab value='/home' label="Home" href="/home" />
-          <StyledTab value='/posts' label="Posts" href="/posts" /> 
+          <StyledTab value='/home' label="Home" />
+          <StyledTab value='/posts' label="Posts" /> 
+          <StyledTab value='/create' label="Create" />
           <StyledTab value={'/posts/'+id} label={id ? "Post "+id : ''} disabled={id ? false : true}/>
-        </StyledTabs>
+        </StyledTabs>  
       </Box>
     );
   }
 
-  const handleLogin = (event) => {
-      if (localStorage.getItem('authorized') === '1'){
-        localStorage.setItem('authorized', '0');
-        navigate('/login');
+  const handleLog = (event) => {
+      if (isAuth){
+        dispatch(setAuth());
       }
       navigate('/login')
   }
@@ -94,8 +92,8 @@ export default function NavBar() {
       <AppBar position="static" style={{background: navTheme.background, borderRadius: 3, width: '99vw'}}>
         <Toolbar>
           <ColorTabs />
-            <Button style={{color: navTheme.color}} onClick={handleLogin}>
-              {log}
+            <Button style={{color: navTheme.color}} onClick={handleLog}>
+              {isAuth ? 'Logout' : 'Login'}
             </Button>
         </Toolbar>
       </AppBar>
