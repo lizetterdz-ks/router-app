@@ -4,6 +4,7 @@ import PostDashboard from './views/PostDashboard';
 import Home from './views/Home'
 import Login from './views/Login';
 import NotFoundScreen from './views/NotFoundScreen';
+import CreateForm from './views/CreateForm';
 import { ProtectedRoute } from './components/PrivateRoute';
 import './App.css';
 
@@ -20,8 +21,14 @@ function App() {
         element={
           <ProtectedRoute redirectTo="/login">
             <PostView />
-          </ProtectedRoute>
-        }
+          </ProtectedRoute>}
+        />
+        <Route
+        path="/create"
+        element={
+          <ProtectedRoute redirectTo="/login">
+            <CreateForm />
+          </ProtectedRoute>}
         />
         <Route path="*" element={<NotFoundScreen />} />
       </Routes>
